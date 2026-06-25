@@ -306,13 +306,13 @@
 
   function renderHeadlineNews() {
     const html = HEADLINES.map((h) =>
-      `<span class="news-item headline-item"><span class="tag ${h.tag}">${h.tag.toUpperCase()}</span>${h.text}</span>`
+      `<span class="news-item headline-item"><span class="tag ${h.tag}">${h.tag.toUpperCase()}</span><span class="headline-text">${h.text}</span></span>`
     ).join('');
     document.getElementById('headlineNews').innerHTML = html + html;
   }
 
   function renderWorldNews() {
-    const html = WORLD_NEWS.map((t) => `<span class="news-item">${t}</span>`).join('');
+    const html = WORLD_NEWS.map((t) => `<span class="news-item world-item">${t}</span>`).join('');
     document.getElementById('worldNews').innerHTML = html + html;
   }
 
