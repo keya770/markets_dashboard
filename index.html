@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Financial News Terminal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <div class="app" id="app">
+
+    <!-- HEADER -->
+    <header class="top-strip">
+      <div class="hdr-block hdr-left">
+        <div class="live-indicator">
+          <span class="rec-dot"></span>
+          <span class="live-text">ON AIR</span>
+        </div>
+        <div class="hdr-divider"></div>
+        <div class="session-info">
+          <span class="lbl">SESSION</span>
+          <span class="val" id="sessionLabel">NYSE</span>
+        </div>
+        <div class="hdr-divider"></div>
+        <div class="index-pills" id="indexPills">
+          <span class="idx-pill"><span class="idx-n">SPX</span><span class="idx-v" id="idxSPX">—</span></span>
+          <span class="idx-pill"><span class="idx-n">VIX</span><span class="idx-v" id="idxVIX">—</span></span>
+          <span class="idx-pill"><span class="idx-n">DXY</span><span class="idx-v" id="idxDXY">—</span></span>
+        </div>
+      </div>
+
+      <div class="hdr-block hdr-center">
+        <div class="datetime-display">
+          <span class="date-line" id="currentDate">—</span>
+          <span class="time-line" id="currentTime">—</span>
+        </div>
+        <div class="hdr-divider tall"></div>
+        <div class="market-status-wrap">
+          <span class="lbl">NYSE</span>
+          <span id="marketStatus" class="market-badge closed">CLOSED</span>
+        </div>
+      </div>
+
+      <div class="hdr-block hdr-right">
+        <div class="clock-grid">
+          <div class="clk"><span class="clk-city">NEW YORK</span><span class="clk-time" id="clockNY">—</span></div>
+          <div class="clk"><span class="clk-city">LONDON</span><span class="clk-time" id="clockLondon">—</span></div>
+          <div class="clk"><span class="clk-city">DUBAI</span><span class="clk-time" id="clockDubai">—</span></div>
+          <div class="clk"><span class="clk-city">MUMBAI</span><span class="clk-time" id="clockMumbai">—</span></div>
+        </div>
+        <div class="hdr-divider tall"></div>
+        <div class="feed-status">
+          <span class="lbl">FEED</span>
+          <span class="feed-val" id="dataSource">SYNC</span>
+          <span class="lbl update-lbl">UPDATED</span>
+          <span class="feed-val dim" id="lastUpdate">—</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- LIVE TV STAGE -->
+    <section class="tv-stage">
+
+      <aside class="side-overlay side-left">
+        <div class="overlay-header">
+          <span class="oh-title">US EQUITIES</span>
+          <span class="oh-sub" id="leftCount">8 ISSUES</span>
+        </div>
+        <div class="col-labels">
+          <span>SYM</span><span>LAST</span><span>CHG%</span>
+        </div>
+        <ul class="stock-list" id="leftStockList"></ul>
+        <div class="overlay-footer">
+          <span>SOURCE: STREAMLINE</span>
+        </div>
+      </aside>
+
+      <div class="video-wrap">
+        <div class="video-badge">
+          <span class="rec-dot sm"></span>
+          <span id="channelName">BLOOMBERG TELEVISION</span>
+        </div>
+
+        <iframe
+          id="liveStream"
+          class="live-iframe"
+          src="https://www.youtube.com/embed/iEpJwprnDdg?autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&playsinline=1"
+          title="Live Financial News"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+
+        <div class="channel-bar">
+          <span class="ch-label">SOURCE</span>
+          <button class="ch-btn active" data-channel="bloomberg">Bloomberg</button>
+          <button class="ch-btn" data-channel="cnbc">CNBC</button>
+          <button class="ch-btn" data-channel="reuters">Reuters</button>
+          <button class="ch-btn" data-channel="sky">Sky News</button>
+        </div>
+
+        <div class="chart-overlay">
+          <div class="chart-overlay-head">
+            <span class="co-title">S&amp;P 500 INDEX</span>
+            <div class="co-nums">
+              <span id="chartValue" class="co-val">—</span>
+              <span id="chartChange" class="co-chg">—</span>
+            </div>
+          </div>
+          <canvas id="marketChart"></canvas>
+        </div>
+      </div>
+
+      <aside class="side-overlay side-right">
+        <div class="overlay-header">
+          <span class="oh-title">MARKET DATA</span>
+          <span class="oh-sub">LIVE</span>
+        </div>
+        <div class="col-labels">
+          <span>SYM</span><span>LAST</span><span>CHG%</span>
+        </div>
+        <ul class="stock-list" id="rightStockList"></ul>
+        <div class="crypto-header">DIGITAL ASSETS</div>
+        <div class="crypto-block" id="cryptoBlock"></div>
+        <div class="overlay-footer">
+          <span id="rightFooterTime">—</span>
+        </div>
+      </aside>
+
+    </section>
+
+    <!-- MARKET TICKER -->
+    <div class="ticker-strip">
+      <div class="ticker-tag">
+        <span class="tag-main">EQUITIES</span>
+        <span class="tag-sub">&amp; INDICES</span>
+      </div>
+      <div class="ticker-scroll-wrap">
+        <div class="ticker-scroll" id="marketTicker"></div>
+      </div>
+    </div>
+
+    <!-- HEADLINE ROW -->
+    <div class="news-row row-headline">
+      <div class="news-row-label gold">
+        <span class="nr-main">BREAKING</span>
+        <span class="nr-sub">HEADLINES</span>
+      </div>
+      <div class="news-scroll-wrap">
+        <div class="news-scroll" id="headlineNews"></div>
+      </div>
+    </div>
+
+    <!-- SOCIAL ROW -->
+    <div class="news-row row-social">
+      <div class="news-row-label x-label">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        <span class="nr-main">SOCIAL</span>
+        <span class="nr-sub">FEED</span>
+      </div>
+      <div class="news-scroll-wrap">
+        <div class="news-scroll social-scroll" id="socialTicker"></div>
+      </div>
+    </div>
+
+    <!-- WORLD NEWS ROW -->
+    <div class="news-row row-world">
+      <div class="news-row-label blue">
+        <span class="nr-main">GLOBAL</span>
+        <span class="nr-sub">WIRE</span>
+      </div>
+      <div class="news-scroll-wrap">
+        <div class="news-scroll slow" id="worldNews"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Boot -->
+  <div class="boot-screen" id="bootScreen">
+    <div class="boot-inner">
+      <div class="boot-title">FINANCIAL TERMINAL</div>
+      <div class="boot-sub">Establishing live data connections</div>
+      <div class="boot-bar"><div class="boot-fill" id="bootProgress"></div></div>
+      <p class="boot-msg" id="bootStatus">Initializing…</p>
+    </div>
+  </div>
+
+</body>
+</html>
